@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tic Tac Toe</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: #222831;
+      color: #EEEEEE;
+      margin: 0;
+    }
+    h1 {
+      margin-bottom: 20px;
+      color: #00ADB5;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 10px;
+    }
+    .cell {
+      background: #393E46;
+      border-radius: 10px;
+      font-size: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s;
+    }
+    .cell:hover {
+      background: #00ADB5;
+    }
+    .status {
+      margin-top: 20px;
+      font-size: 1.5rem;
+      min-height: 1.5rem;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background: #00ADB5;
+      border: none;
+      border-radius: 20px;
+      color: #222831;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background: #EEEEEE;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Tic Tac Toe</h1>
+
+  <div class="board" id="board">
+    <div class="cell" data-index="0"></div>
+    <div class="cell" data-index="1"></div>
+    <div class="cell" data-index="2"></div>
+    <div class="cell" data-index="3"></div>
+    <div class="cell" data-index="4"></div>
+    <div class="cell" data-index="5"></div>
+    <div class="cell" data-index="6"></div>
+    <div class="cell" data-index="7"></div>
+    <div class="cell" data-index="8"></div>
+  </div>
+
+  <div class="status" id="status"></div>
+
+  <button id="restartBtn">Mulai Ulang</button>
+
+  <script>
+    const board = document.getElementById('board');
+    const cells = document.querySelectorAll('.cell');
+    const statusDiv = document.getElementById('status');
+    const restartBtn = document.getElementById('restartBtn');
+
+    let boardState = ['', '', '', '', '', '', '', '', ''];
+    let currentPlayer = 'X';
+    let isGameActive = true;
+
+    const winningConditions = [
+      [0,1,2],
+      [3,4,5],
+      [6,7,8],
+      [0,3,6],
+      [1,4,7],
+      [2,5,8],
+      [0,4,8],
+      [2,4,6]
+    ];
+
+    function handleCellClick(e) {
+      const index = e.target.getAttribute('data-index');
+      if (boardState[index] !== '' || !isGameActive) return;
+
+      updateCell(e.target, index);
+      checkResult();
+    }
+
+    function updateCell(cell, index) {
+      boardState[index] = currentPlayer;
+      cell.textContent = currentPlayer;
+    }
+
+    function changePlayer() {
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+      statusDiv.textContent = `Giliran: ${currentPlayer}`;
+    }
+
+    function checkResult() {
+      let roundWon = false;
+      for (let condition of winningConditions) {
+        const [a, b, c] = condition;
+        if (
+          boardState[a] &&
+          boardState[a] === boardState[b] &&
+          boardState[a] === boardState[c]
+        ) {
+          roundWon = true;
+          break;
+        }
+      }
+
+      if (roundWon) {
+        statusDiv.textContent = `Pemenangnya adalah ${currentPlayer}! 🎉`;
+        isGameActive = false;
+        return;
+      }
+
+      if (!boardState.includes('')) {
+        statusDiv.textContent = `Permainan Seri! 🤝`;
+        isGameActive = false;
+        return;
+      }
+
+      changePlayer();
+    }
+
+    function restartGame() {
+      boardState = ['', '', '', '', '', '', '', '', ''];
+      isGameActive = true;
+      currentPlayer = 'X';
+      statusDiv.textContent = `Giliran: ${currentPlayer}`;
+      cells.forEach(cell => cell.textContent = '');
+    }
+
+    cells.forEach(cell => cell.addEventListener('click', handleCellClick));
+    restartBtn.addEventListener('click', restartGame);
+
+    // Init status
+    statusDiv.textContent = `Giliran: ${currentPlayer}`;
+  </script>
+
+</body>
+</html>
